@@ -12,6 +12,4 @@ client
   .connect()
   .catch((e) => console.log(`Error connecting to Postgres server:\n${e}`));
 
-console.log("reached here");
-
 module.exports = client;
