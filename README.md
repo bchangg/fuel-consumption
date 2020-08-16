@@ -16,3 +16,4 @@ This is a full stack application that allows people who live together to track t
 
 1. Complete the database setup instructions above
 2. Execute `npm run start` in the root directory of the app
+3. Visit `localhost:3000` to view the application
