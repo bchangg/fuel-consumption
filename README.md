@@ -11,3 +11,8 @@ This is a full stack application that allows people who live together to track t
 5. Exit PSQL with `\q`
 6. Enter `psql -d postgres -U spot_me_back` to connect to PSQL with `spot_me_back` role
 7. Enter `CREATE DATABASE spot_me_back_api` to create database
+
+## Start Application
+
+1. Complete the database setup instructions above
+2. Execute `npm run start` in the root directory of the app
