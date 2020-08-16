@@ -1,31 +1,58 @@
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
+const helmet = require("helmet");
+const db = require("./db");
+const path = require("path");
+const fs = require("fs");
 
-const app = express();
 const port = process.env.PORT || 5000;
 
-const db = require("./db");
+const app = express();
 
-// const groceries = "./routes/groceries";
-// const householdItems = "./routes/household_items";
-// const bills = "./routes/bills";
-
+app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-// app.use("/api/groceries", groceries);
-// app.use("/api/household", householdItems);
-// app.use("/api/bills", bills);
 
-// app.get("/api/hello", (req, res) => {
-//   res.send({ express: "Hello From Express" });
-// });
-//
-// app.post("/api/world", (req, res) => {
-//   console.log(req.body);
-//   res.send(
-//     `I received your POST request. This is what you sent me: ${req.body.post}`
-//   );
-// });
+// const homesRouter = require("./routes/homes.js");
+// const usersRouter = require("./routes/users.js");
+// const itemsRouter = require("./routes/items.js");
+// app.use("/api/homes", homesRouter);
+// app.use("/api/users", usersRouter);
+// app.use("/api/items", itemsRouter);
+
+function read(file) {
+  return new Promise((resolve, reject) => {
+    console.log("inside file read promise");
+    fs.readFile(
+      file,
+      {
+        encoding: "utf-8",
+      },
+      (error, data) => {
+        if (error) return reject(error);
+        resolve(data);
+      }
+    );
+  });
+}
+
+read(path.resolve(__dirname, `./db/schema/create.sql`))
+  .then((create) => {
+    db.query(create)
+      .then(() => {
+        console.log("Database created");
+      })
+      .catch((error) => {
+        console.log(`Error setting up database: ${error}`);
+      });
+  })
+  .catch((error) => {
+    console.log(`Error setting up database: ${error}`);
+  });
+
+app.close = function () {
+  return db.end();
+};
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
