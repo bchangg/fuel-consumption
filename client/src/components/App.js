@@ -1,64 +1,46 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 
 import logo from "../logo.svg";
 
 import "./App.css";
 
-class App extends Component {
-  state = {
+const callApi = async () => {
+  const response = await fetch("/api/hello");
+  const body = await response.json();
+  if (response.status !== 200) throw Error(body.message);
+
+  return body;
+};
+
+export default function App() {
+  const [state, setState] = useState({
     response: "",
     post: "",
     responseToPost: "",
-  };
+  });
 
-  componentDidMount() {
-    this.callApi()
-      .then((res) => this.setState({ response: res.express }))
+  useEffect(() => {
+    callApi()
+      .then((res) => setState({ ...state, response: res.express }))
       .catch((err) => console.log(err));
-  }
+  }, [state]);
 
-  callApi = async () => {
-    const response = await fetch("/api/hello");
-    const body = await response.json();
-    if (response.status !== 200) throw Error(body.message);
-
-    return body;
-  };
-
-  handleSubmit = async (e) => {
-    e.preventDefault();
-    const response = await fetch("/api/world", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ post: this.state.post }),
-    });
-    const body = await response.text();
-
-    this.setState({ responseToPost: body });
-  };
-
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+  return (
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React
+        </a>
+      </header>
+    </div>
+  );
 }
-
-export default App;
