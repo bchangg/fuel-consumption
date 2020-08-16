@@ -1,47 +1,35 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-
-import logo from "../logo.svg";
-
 import "./App.css";
-
-const callApi = async () => {
-  const response = await fetch("/api/hello");
-  const body = await response.json();
-  if (response.status !== 200) throw Error(body.message);
-
-  return body;
-};
+import axios from "axios";
+import Header from "./Header";
+import Content from "./Content";
 
 export default function App() {
-  const [state, setState] = useState({
-    response: "",
-    post: "",
-    responseToPost: "",
-  });
-
+  const [loggedIn, setLoggedIn] = useState(true);
+  const [mode, setMode] = useState("login");
   useEffect(() => {
-    callApi()
-      .then((res) => setState({ ...state, response: res.express }))
-      .catch((err) => console.log(err));
-  }, [state]);
+    axios
+      .get("/auth/loggedIn")
+      .then((response) => {
+        if (response.data) {
+          setLoggedIn(true);
+        }
+      })
+      .catch((error) => {
+        setLoggedIn(false);
+        console.log(error);
+      });
+  }, []);
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header loggedIn={loggedIn} setMode={setMode} />
+      <Content
+        mode={mode}
+        setMode={setMode}
+        loggedIn={loggedIn}
+        setLoggedIn={setLoggedIn}
+      />
     </div>
   );
 }
