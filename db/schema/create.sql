@@ -13,7 +13,6 @@ $$ language 'plpgsql';
 
 CREATE TABLE homes (
   id SERIAL PRIMARY KEY NOT NULL,
-  name VARCHAR(255) NOT NULL,
   address VARCHAR(255) NOT NULL,
   updated_at TIMESTAMP DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW()
