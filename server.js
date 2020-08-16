@@ -41,7 +41,7 @@ read(path.resolve(__dirname, `./db/schema/create.sql`))
   .then((create) => {
     db.query(create)
       .then(() => {
-        console.log("Database created");
+        console.log("Successfully created database");
       })
       .catch((error) => {
         console.log(`Error setting up database: ${error}`);
