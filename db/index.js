@@ -1,6 +1,6 @@
 const pg = require("pg");
 
-const pool = new pg.Pool({
+const client = new pg.Client({
   user: process.env.PGUSER,
   password: process.env.PGPASSWORD,
   host: process.env.PGHOST,
@@ -8,8 +8,10 @@ const pool = new pg.Pool({
   port: process.env.PGPORT,
 });
 
-pool
+client
   .connect()
   .catch((e) => console.log(`Error connecting to Postgres server:\n${e}`));
 
-module.exports = pool;
+console.log("reached here");
+
+module.exports = client;
