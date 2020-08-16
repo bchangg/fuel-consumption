@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
+const cookieSession = require("cookie-session");
 const helmet = require("helmet");
 const db = require("./db");
 const path = require("path");
@@ -13,17 +14,24 @@ const app = express();
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+  cookieSession({
+    name: "spotMeBackCookie",
+    keys: ["randomGibberish"],
+  })
+);
 
 // const homesRouter = require("./routes/homes.js");
 // const usersRouter = require("./routes/users.js");
 // const itemsRouter = require("./routes/items.js");
+const authRouter = require("./routes/auth.js");
 // app.use("/api/homes", homesRouter);
 // app.use("/api/users", usersRouter);
 // app.use("/api/items", itemsRouter);
+app.use("/auth", authRouter(db));
 
 function read(file) {
   return new Promise((resolve, reject) => {
-    console.log("inside file read promise");
     fs.readFile(
       file,
       {
