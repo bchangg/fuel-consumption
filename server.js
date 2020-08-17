@@ -6,11 +6,13 @@ const helmet = require("helmet");
 const db = require("./db");
 const path = require("path");
 const fs = require("fs");
+const cors = require("cors");
 
 const port = process.env.PORT || 5000;
 
 const app = express();
 
+app.use(cors());
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -21,13 +23,13 @@ app.use(
   })
 );
 
-// const homesRouter = require("./routes/homes.js");
-// const usersRouter = require("./routes/users.js");
-// const itemsRouter = require("./routes/items.js");
+const homesRouter = require("./routes/homes.js");
+const usersRouter = require("./routes/users.js");
+const entriesRouter = require("./routes/entries.js");
 const authRouter = require("./routes/auth.js");
-// app.use("/api/homes", homesRouter);
-// app.use("/api/users", usersRouter);
-// app.use("/api/items", itemsRouter);
+app.use("/api/homes", homesRouter(db));
+app.use("/api/users", usersRouter(db));
+app.use("/api/entries", entriesRouter(db));
 app.use("/auth", authRouter(db));
 
 function read(file) {
@@ -45,9 +47,13 @@ function read(file) {
   });
 }
 
-read(path.resolve(__dirname, `./db/schema/create.sql`))
-  .then((create) => {
+Promise.all([
+  read(path.resolve(__dirname, `./db/schema/create.sql`)),
+  read(path.resolve(__dirname, `./db/schema/seed.sql`)),
+])
+  .then(([create, seed]) => {
     db.query(create)
+      .then(db.query(seed))
       .then(() => {
         console.log("Successfully created database");
       })
