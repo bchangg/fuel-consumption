@@ -4,12 +4,9 @@ import Page from "./Page";
 
 const LOGIN = "login";
 const REGISTER = "register";
-const GROCERIES = "groceries";
-const HOUSEHOLDITEMS = "householdItems";
-const BILLS = "bills";
 
 export default function Content(props) {
-  let mode = props.mode;
+  const { mode } = props;
   return (
     <div
       className="content"
@@ -17,25 +14,15 @@ export default function Content(props) {
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        minHeight: "100vh",
-        backgroundColor: "grey",
+        height: "100vh",
+        backgroundColor: "#F2F2F2",
       }}
     >
-      {mode === LOGIN && (
-        <Auth
-          mode={"login"}
-          loggedIn={props.loggedIn}
-          setMode={props.setMode}
-        />
+      {mode !== REGISTER && mode !== LOGIN ? (
+        <Page {...props} />
+      ) : (
+        <Auth {...props} />
       )}
-      {mode === REGISTER && (
-        <Auth
-          mode={"register"}
-          setMode={props.setMode}
-          loggedIn={props.loggedIn}
-        />
-      )}
-      {mode !== REGISTER && mode !== LOGIN && <Page mode={mode} />}
     </div>
   );
 }

@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect } from "react";
-import { Button, ButtonGroup } from "@material-ui/core";
+import React from "react";
+import { Button } from "@material-ui/core";
 import axios from "axios";
 
 export default function Header(props) {
@@ -8,8 +8,8 @@ export default function Header(props) {
       axios
         .post("/auth/logout")
         .then((response) => {
-          if (response === "logged out") {
-            props.setMode("login");
+          if (response.data === "success") {
+            props.setLoggedIn(false);
           }
         })
         .catch((error) => {
@@ -24,8 +24,10 @@ export default function Header(props) {
     <div
       className="header"
       style={{
-        height: "100%",
+        top: "0",
         backgroundColor: "brown",
+        width: "100vw",
+        position: "fixed",
       }}
     >
       <div
@@ -37,6 +39,7 @@ export default function Header(props) {
         <p>Spot Me Back</p>
         {props.loggedIn ? (
           <div>
+            <span>Logged in as: {props.user.email}</span>
             <Button
               onClick={() => {
                 handleClick("groceries");

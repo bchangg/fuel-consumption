@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import axios from "axios";
@@ -11,33 +11,25 @@ export default function Auth(props) {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
-  useEffect(() => {
-    console.log(props.loggedIn);
-    if (props.loggedIn) {
-      props.setMode("groceries");
-    } else {
-      props.setMode("login");
+  const handleLogin = () => {
+    if (email && password) {
+      axios
+        .post("/auth/login", { email: email, password: password })
+        .then((response) => {
+          if (response.data === "success") {
+            props.setLoggedIn(true);
+          } else {
+            alert(response.data);
+            props.setLoggedIn(false);
+          }
+        })
+        .catch((error) => {
+          alert(error);
+        });
     }
-  }, [props]);
-
-  const handleLogin = (event) => {
-    axios
-      .post("/auth/login", { email: email, password: password })
-      .then((response) => {
-        if (response.body === "success") {
-          props.setLoggedIn(true);
-        } else {
-          alert("Error logging in");
-          props.setLoggedIn(false);
-        }
-        props.setLoggedIn(true);
-      })
-      .catch((error) => {
-        props.setLoggedIn(false);
-      });
   };
 
-  const handleRegister = (event) => {
+  const handleRegister = () => {
     axios
       .post("/auth/register", {
         address: streetAddress,
@@ -48,7 +40,7 @@ export default function Auth(props) {
         passwordConfirmation: passwordConfirmation,
       })
       .then((response) => {
-        if (response.body === "success") {
+        if (response.data["id"] !== undefined) {
           props.setLoggedIn(true);
         } else {
           alert("Error registering");
@@ -139,7 +131,7 @@ export default function Auth(props) {
         variant="outlined"
         color="primary"
         type="submit"
-        onSubmit={props.mode === "register" ? handleRegister : handleLogin}
+        onClick={props.mode === "register" ? handleRegister : handleLogin}
       >
         {props.mode === "register" ? "Register" : "Log In"}
       </Button>
