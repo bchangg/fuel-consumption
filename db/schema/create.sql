@@ -1,12 +1,12 @@
-DROP TABLE IF EXISTS user_items CASCADE;
-DROP TABLE IF EXISTS items CASCADE;
+DROP TABLE IF EXISTS users_entries CASCADE;
+DROP TABLE IF EXISTS entries CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS homes CASCADE;
 
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
-    NEW.modified = now();
+    NEW.updated_at = now();
     RETURN NEW;
 END;
 $$ language 'plpgsql';
@@ -25,29 +25,29 @@ CREATE TABLE users (
   email VARCHAR(255) NOT NULL,
   updated_at TIMESTAMP DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  home_id INTEGER REFERENCES homes(id)
+  home_id INTEGER REFERENCES homes(id) ON DELETE CASCADE
 );
 
-CREATE TABLE items (
+CREATE TABLE entries (
   id SERIAL PRIMARY KEY NOT NULL,
   name VARCHAR(255) NOT NULL,
   category VARCHAR(255) NOT NULL,
   price INTEGER NOT NULL,
   updated_at TIMESTAMP DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  home_id INTEGER REFERENCES homes(id)
+  home_id INTEGER REFERENCES homes(id) ON DELETE CASCADE
 );
 
-CREATE TABLE user_items (
+CREATE TABLE users_entries (
   id SERIAL PRIMARY KEY NOT NULL,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  item_id INTEGER REFERENCES items(id) ON DELETE CASCADE,
+  entry_id INTEGER REFERENCES entries(id) ON DELETE CASCADE,
   updated_at TIMESTAMP DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  home_id INTEGER REFERENCES homes(id)
+  home_id INTEGER REFERENCES homes(id) ON DELETE CASCADE
 );
 
 CREATE TRIGGER homes_updated_at_modtime BEFORE UPDATE ON homes FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 CREATE TRIGGER users_updated_at_modtime BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
-CREATE TRIGGER items_updated_at_modtime BEFORE UPDATE ON items FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
-CREATE TRIGGER user_items_updated_at_modtime BEFORE UPDATE ON user_items FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER entries_updated_at_modtime BEFORE UPDATE ON entries FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER users_entries_updated_at_modtime BEFORE UPDATE ON users_entries FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
